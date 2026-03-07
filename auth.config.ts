@@ -7,44 +7,40 @@ import { env } from "@/env.mjs";
 
 export default {
   providers: [
-    // --- OEON 论坛登录 (标准环境变量版) ---
     {
       id: "wordpress",
       name: "OEON 论坛登录",
       type: "oauth",
-      authorization: {
-        url: "https://oeon.cc/oauth/authorize",
-        params: { scope: "basic" },
-      },
+      authorization: "https://oeon.cc/oauth/authorize?scope=basic",
       token: "https://oeon.cc/oauth/token",
       userinfo: "https://oeon.cc/oauth/me", 
-      // 改为从 env.mjs 中读取，确保部署环境一致性
       clientId: env.WP_CLIENT_ID, 
       clientSecret: env.WP_CLIENT_SECRET,
-      // 保持 checks: ["none"] 以解决 Serverless 环境下的 state 校验问题
       checks: ["none"], 
       profile: (profile: any) => {
-        // 自动映射 WordPress 返回的字段
+        // 兼容不同的返回结构
         const user = profile.user || profile;
+        const id = (user.ID || user.id || "").toString();
+        const email = user.user_email || user.email;
+
         return {
-          id: (user.ID || user.id || user.sub || "").toString(),
-          name: user.display_name || user.username || user.name || "OEON User",
-          email: user.user_email || user.email || null,
+          id: id,
+          name: user.display_name || user.username || user.name || "OEON_User",
+          // PrismaAdapter 必须要求唯一 email
+          // 如果论坛没返回 email，我们根据 ID 生成一个伪邮箱，防止数据库写入失败
+          email: email || `${id}@oeon.cc`, 
           image: user.avatar_url || null,
         };
       },
     },
-    // --- Google ---
     Google({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
-    // --- Github ---
     Github({
       clientId: env.GITHUB_ID,
       clientSecret: env.GITHUB_SECRET,
     }),
-    // --- Linux Do ---
     {
       id: "linuxdo",
       name: "Linux Do",
@@ -65,7 +61,6 @@ export default {
         };
       },
     },
-    // --- Credentials ---
     Credentials({
       name: "Credentials",
       credentials: {
