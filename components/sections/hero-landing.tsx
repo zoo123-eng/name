@@ -12,7 +12,7 @@ import { Icons } from "@/components/shared/icons";
 
 import { InfiniteSlider } from "../ui/infinite-slider";
 import { ProgressiveBlur } from "../ui/progressive-blur";
-import PreviewLanding from "./preview-landing";  // 如果不需要预览组件，注释这行 + 下面 <PreviewLanding />
+import PreviewLanding from "./preview-landing";  // 如果不需要预览，注释这行 + 下面 <PreviewLanding />
 
 export default function HeroLanding({
   userId,
@@ -72,7 +72,7 @@ export default function HeroLanding({
             )}
           >
             <span>QQ群聊</span>
-            {Icons.messageCircle && <Icons.messageCircle className="size-5" />} {/* 安全检查图标是否存在 */}
+            <Icons.MessageCircle className="size-5" /> {/* 使用正确的图标名称 */}
           </Link>
 
           {/* 登录/仪表盘按钮 */}
