@@ -39,7 +39,6 @@ export default function HeroLanding({
   return (
     <section className="relative space-y-6 py-12 sm:py-16">
       <div className="container flex max-w-screen-lg flex-col items-center gap-5 text-center">
-        {/* 顶部小按钮 */}
         <Link
           href="https://oeon.cc/"
           target="_blank"
@@ -133,7 +132,7 @@ export default function HeroLanding({
         </div>
       </div>
 
-      {/* 只保留两个模块：子域名托管 + 域名邮箱 */}
+      {/* 功能介绍模块，只保留邮箱 + 子域名 */}
       <div className="mx-auto w-full max-w-5xl px-6">
         <div className="flex flex-col items-center gap-4 text-center">
           <h2 className="font-mono font-semibold uppercase tracking-wider text-blue-600">
@@ -260,7 +259,7 @@ export default function HeroLanding({
           </div>
         </div>
 
-        {/* 如果不需要 demo 区，可注释掉下面 */}
+        {/* demo 区 - 如果不需要注释掉 */}
         {/* <div className="grids grids-dark mx-auto my-12 flex w-full max-w-6xl px-4">
           <UrlShortener />
           <EmailManagerExp />
