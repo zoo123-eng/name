@@ -13,29 +13,29 @@ export default {
       type: "oauth",
       authorization: "https://oeon.cc/oauth/authorize",
       token: "https://oeon.cc/oauth/token",
-      // 重点：在子比主题 + WP OAuth Server 环境下，这个 REST API 路径最稳定
+      // 由于你开启了 JWT 模式，尝试使用这个最稳健的 REST 路径
       userinfo: "https://oeon.cc/wp-json/wp-oauth/me", 
       clientId: env.WP_CLIENT_ID, 
       clientSecret: env.WP_CLIENT_SECRET,
       checks: ["none"], 
       profile: (profile: any) => {
-        // 打印到 Logs 以便你观察返回的真实结构
-        console.log("WP OAuth Server Raw Profile:", profile);
+        // 打印到 Logs 以便观察 JWT 模式下返回的具体结构
+        console.log("WP JWT Profile Raw:", profile);
         
-        // 自动识别子比主题可能包裹的 data 节点或插件的根节点
+        // 自动适配：JWT 模式下数据可能直接在根部，也可能在 user 节点
         const user = profile.user || profile.data || profile;
-        const userId = (user.ID || user.id || "").toString();
+        const userId = (user.ID || user.id || user.sub || "").toString();
 
         return {
           id: userId,
           name: user.display_name || user.user_login || user.nickname || "OEON_User",
-          // PrismaAdapter 必须要求唯一 email，若为空则生成伪邮箱
+          // 必须确保有 email 字段，否则 PrismaAdapter 会报错
           email: user.user_email || user.email || `${userId}@oeon.cc`,
           image: user.avatar_url || user.avatar || null,
         };
       },
     },
-    // --- 其他配置保持不变 ---
+    // --- Google, Github, LinuxDo 保持不变 ---
     Google({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
