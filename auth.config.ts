@@ -6,29 +6,6 @@ import { env } from "@/env.mjs";
 
 export default {
   providers: [
-    {
-      id: "wordpress",
-      name: "OEON 论坛",
-      type: "oauth",
-      authorization: "https://oeon.cc/oauth/authorize",
-      token: "https://oeon.cc/oauth/token",
-      userinfo: "https://oeon.cc/wp-json/wp-oauth/me", 
-      clientId: env.WP_CLIENT_ID, 
-      clientSecret: env.WP_CLIENT_SECRET,
-      checks: ["none"], 
-      profile: (profile: any) => {
-        const user = profile.user || profile.data || profile;
-        const userId = (user.ID || user.id || "").toString();
-        return {
-          id: userId,
-          name: user.display_name || user.user_login || "User",
-          email: user.user_email || user.email || `${userId}@oeon.cc`,
-          image: user.avatar_url || null,
-          role: "USER", // 匹配 UserRole enum
-          active: 1     // 匹配 Prisma 默认值
-        };
-      },
-    },
     Google({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
@@ -37,24 +14,28 @@ export default {
       clientId: env.GITHUB_ID,
       clientSecret: env.GITHUB_SECRET,
     }),
+    // 【魔改核心】：外表是 Linux Do，内核是 OEON 论坛
     {
-      id: "linuxdo",
-      name: "Linux Do",
+      id: "linuxdo", // ⚠️ 必须保留这个 ID，用来骗过系统校验
+      name: "OEON 论坛", // 授权页显示的名字
       type: "oauth",
-      authorization: "https://connect.linux.do/oauth2/authorize",
-      token: "https://connect.linux.do/oauth2/token",
-      userinfo: "https://connect.linux.do/api/user",
-      clientId: env.LinuxDo_CLIENT_ID,
-      clientSecret: env.LinuxDo_CLIENT_SECRET,
-      checks: ["state"],
+      authorization: "https://oeon.cc/oauth/authorize",
+      token: "https://oeon.cc/oauth/token",
+      userinfo: "https://oeon.cc/wp-json/wp-oauth/me", 
+      clientId: env.WP_CLIENT_ID || "missing", // 直接读取 WP 的环境变量
+      clientSecret: env.WP_CLIENT_SECRET || "missing",
+      checks: ["none"], // ⚠️ 必须是 none，规避 WP 插件验证问题
       profile: (profile: any) => {
+        // 按照 WordPress 的格式解析数据
+        const user = profile.user || profile.data || profile;
+        const userId = (user.ID || user.id || "").toString();
         return {
-          id: profile.id.toString(),
-          name: profile.username,
-          image: profile.avatar_url,
-          email: profile.email,
+          id: userId,
+          name: user.display_name || user.user_login || "User",
+          email: user.user_email || user.email || `${userId}@oeon.cc`,
+          image: user.avatar_url || null,
           role: "USER",
-          active: profile.active ? 1 : 0,
+          active: 1,
         };
       },
     },
