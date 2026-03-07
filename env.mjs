@@ -12,6 +12,9 @@ export const env = createEnv({
     GITHUB_SECRET: z.string().optional(),
     LinuxDo_CLIENT_ID: z.string().optional(),
     LinuxDo_CLIENT_SECRET: z.string().optional(),
+    // 新增：WordPress 论坛变量
+    WP_CLIENT_ID: z.string().optional(),
+    WP_CLIENT_SECRET: z.string().optional(),
     DATABASE_URL: z.string().optional(),
     RESEND_API_KEY: z.string().optional(),
     BREVO_API_KEY: z.string().optional(),
@@ -47,5 +50,8 @@ export const env = createEnv({
     GITHUB_TOKEN: process.env.GITHUB_TOKEN,
     LinuxDo_CLIENT_ID: process.env.LinuxDo_CLIENT_ID,
     LinuxDo_CLIENT_SECRET: process.env.LinuxDo_CLIENT_SECRET,
+    // 新增映射
+    WP_CLIENT_ID: process.env.WP_CLIENT_ID,
+    WP_CLIENT_SECRET: process.env.WP_CLIENT_SECRET,
   },
 });
