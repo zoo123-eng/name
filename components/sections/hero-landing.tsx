@@ -12,7 +12,7 @@ import { Icons } from "@/components/shared/icons";
 
 import { InfiniteSlider } from "../ui/infinite-slider";
 import { ProgressiveBlur } from "../ui/progressive-blur";
-import PreviewLanding from "./preview-landing";  // 如果不要预览，注释这行 + 下面 <PreviewLanding />
+import PreviewLanding from "./preview-landing";  // 如果不需要预览组件，注释这行 + 下面 <PreviewLanding />
 
 export default function HeroLanding({
   userId,
@@ -33,7 +33,7 @@ export default function HeroLanding({
   return (
     <section className="relative space-y-6 py-12 sm:py-16">
       <div className="container flex max-w-screen-lg flex-col items-center gap-5 text-center">
-        {/* 修改后的顶部小按钮：由 OEON.CC 论坛提供运行 */}
+        {/* 顶部小按钮：由 OEON.CC 论坛提供运行 */}
         <Link
           href="https://oeon.cc/"
           target="_blank"
@@ -59,9 +59,9 @@ export default function HeroLanding({
           快速创建短链接、自定义域名服务，安全稳定，由 OEON.CC 论坛支持。
         </p>
 
-        {/* 按钮区：QQ群聊（淡蓝色） + 登录/仪表盘 */}
+        {/* 按钮区 */}
         <div className="mb-10 flex items-center justify-center gap-4 flex-wrap">
-          {/* QQ群聊按钮 - 淡蓝色 outline */}
+          {/* QQ群聊按钮 - 淡蓝色 */}
           <Link
             href="https://qun.qq.com/universal-share/share?ac=1&authKey=3yrjeQp0GpSEnVMwcqWSI1Apd%2BIHePoVnNYWZtk6kfL9NXxV6zbcQNxfPgNfgNVL&busi_data=eyJncm91cENvZGUiOiIxMDA0NTkwNjA1IiwidG9rZW4iOiJFcThhR1lralJPdDRwTzBBbWZBSUYvNEpldnlwb3ZmS1lXaktJMElUem5vUzVHWVJmZ2dWbkVKcHlwME1nTVRJIiwidWluIjoiMTQ5Mzk5MDU4NCJ9&data=RiuhusRkC1tViesrUz9YDSJbQPXqBUCgYcYZYpQOXQgNcfS2T5o7uwbqzJFl0gpqiuG6muar3OdvbPPHyTP6bA&svctype=4&tempid=h5_group_info"
             target="_blank"
@@ -72,7 +72,7 @@ export default function HeroLanding({
             )}
           >
             <span>QQ群聊</span>
-            <Icons.messageCircle className="size-5" /> {/* 如果图标不存在，删掉这行 */}
+            {Icons.messageCircle && <Icons.messageCircle className="size-5" />} {/* 安全检查图标是否存在 */}
           </Link>
 
           {/* 登录/仪表盘按钮 */}
@@ -88,7 +88,7 @@ export default function HeroLanding({
           </Link>
         </div>
 
-        {/* 产品预览 - 如果不需要，注释下面这行 */}
+        {/* 产品预览 - 如不需要可注释 */}
         {/* <PreviewLanding /> */}
 
         {/* 已激活域名滚动展示 */}
