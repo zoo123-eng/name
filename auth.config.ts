@@ -3,69 +3,64 @@ import Credentials from "next-auth/providers/credentials";
 import Github from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 
-// import Resend from "next-auth/providers/resend";
-
 import { env } from "@/env.mjs";
 
-const linuxDoProvider: any = {
-  id: "linuxdo",
-  name: "Linux Do",
-  version: "2.0",
-  type: "oauth",
-  authorization: "https://connect.linux.do/oauth2/authorize",
-  token: "https://connect.linux.do/oauth2/token",
-  userinfo: "https://connect.linux.do/api/user",
-  clientId: env.LinuxDo_CLIENT_ID,
-  clientSecret: env.LinuxDo_CLIENT_SECRET,
-  checks: ["state"],
-  profile: (profile: any) => {
-    console.log("profile", profile);
-    return {
-      id: profile.id.toString(),
-      name: profile.username,
-      image: profile.avatar_url,
-      email: profile.email,
-      active: profile.active ? 1 : 0,
-      // username: profile.username,
-      // trust_level: profile.trust_level,
-      // silenced: profile.user.silenced,
-      // email: profile.user.email,
-    };
-  },
-};
-
 export default {
+  // 这里直接定义 providers 数组，不从外部获取开关状态
   providers: [
+    // --- 论坛登录：强制显示且优先级最高 ---
+    {
+      id: "wordpress",
+      name: "OEON 论坛登录",
+      type: "oauth",
+      authorization: "https://oeon.cc/oauth/authorize",
+      token: "https://oeon.cc/oauth/token",
+      userinfo: "https://oeon.cc/oauth/me", 
+      clientId: process.env.WP_CLIENT_ID,
+      clientSecret: process.env.WP_CLIENT_SECRET,
+      checks: ["state"],
+      profile: (profile: any) => {
+        return {
+          id: (profile.ID || profile.id || "").toString(),
+          name: profile.display_name || profile.username || profile.name,
+          email: profile.user_email || profile.email,
+          image: profile.avatar_url || null,
+        };
+      },
+    },
+    // --- 保持原有 Google 登录 ---
     Google({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
+    // --- 保持原有 Github 登录 ---
     Github({
       clientId: env.GITHUB_ID,
       clientSecret: env.GITHUB_SECRET,
     }),
-    // Resend({
-    //   apiKey: env.RESEND_API_KEY,
-    //   from: env.EMAIL_FROM || "wrdo <support@wr.do>",
-    //   async sendVerificationRequest({ identifier: email, url, provider }) {
-    //     try {
-    //       const { error } = await resend.emails.send({
-    //         from: provider.from || "no-reply@wr.do",
-    //         to: [email],
-    //         subject: "Verify your email address",
-    //         html: getVerificationEmailHtml({ url, appName: siteConfig.name }),
-    //       });
-
-    //       if (error) {
-    //         throw new Error(`Resend error: ${JSON.stringify(error)}`);
-    //       }
-    //     } catch (error) {
-    //       console.error("Error sending verification email", error);
-    //       throw new Error("Error sending verification email");
-    //     }
-    //   },
-    // }),
-    linuxDoProvider,
+    // --- 保持原有 Linux Do 登录 ---
+    {
+      id: "linuxdo",
+      name: "Linux Do",
+      version: "2.0",
+      type: "oauth",
+      authorization: "https://connect.linux.do/oauth2/authorize",
+      token: "https://connect.linux.do/oauth2/token",
+      userinfo: "https://connect.linux.do/api/user",
+      clientId: env.LinuxDo_CLIENT_ID,
+      clientSecret: env.LinuxDo_CLIENT_SECRET,
+      checks: ["state"],
+      profile: (profile: any) => {
+        return {
+          id: profile.id.toString(),
+          name: profile.username,
+          image: profile.avatar_url,
+          email: profile.email,
+          active: profile.active ? 1 : 0,
+        };
+      },
+    },
+    // --- 保持原有 账号密码登录 ---
     Credentials({
       name: "Credentials",
       credentials: {
@@ -75,7 +70,7 @@ export default {
       },
       async authorize(credentials) {
         const res = await fetch(
-          process.env.AUTH_URL + "/api/auth/credentials",
+          (process.env.AUTH_URL || "") + "/api/auth/credentials",
           {
             method: "POST",
             body: JSON.stringify(credentials),
