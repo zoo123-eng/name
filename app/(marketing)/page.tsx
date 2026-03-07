@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/session";
 import { constructMetadata } from "@/lib/utils";
-import HeroLanding, { LandingImages } from "@/components/sections/hero-landing"; // 恢复导入 LandingImages
+import HeroLanding, { LandingImages } from "@/components/sections/hero-landing";
 import { PricingSection } from "@/components/sections/pricing";
 
 export const metadata = constructMetadata({
@@ -13,8 +13,8 @@ export default async function IndexPage() {
   return (
     <>
       <HeroLanding userId={user?.id} />
-      <LandingImages /> {/* 恢复产品介绍 */}
-      <PricingSection /> {/* 如果不需要定价，可注释 */}
+      <LandingImages />
+      <PricingSection /> {/* 如果不需要，可注释 */}
     </>
   );
 }
