@@ -18,7 +18,6 @@ import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/shared/icons";
 
 import { Skeleton } from "../ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type?: string;
@@ -28,43 +27,19 @@ type FormData = z.infer<typeof userAuthSchema>;
 type FormData2 = z.infer<typeof userPasswordAuthSchema>;
 
 export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(userAuthSchema),
-  });
-  const {
-    register: register2,
-    handleSubmit: handleSubmit2,
-    formState: { errors: errors2 },
-  } = useForm<FormData2>({
-    resolver: zodResolver(userPasswordAuthSchema),
-  });
+  const { register: register2, handleSubmit: handleSubmit2, formState: { errors: errors2 } } = useForm<FormData2>({ resolver: zodResolver(userPasswordAuthSchema) });
   const [isLoading, startTransition] = React.useTransition();
   const [isGoogleLoading, setIsGoogleLoading] = React.useState<boolean>(false);
   const [isGithubLoading, setIsGithubLoading] = React.useState<boolean>(false);
-  const [isLinuxDoLoading, setIsLinuxDoLoading] =
-    React.useState<boolean>(false);
-  const [isWpLoading, setIsWpLoading] = React.useState<boolean>(false);
+  const [isLinuxDoLoading, setIsLinuxDoLoading] = React.useState<boolean>(false);
   const [suffixWhiteList, setSuffixWhiteList] = React.useState<string[]>([]);
   const searchParams = useSearchParams();
-
   const t = useTranslations("Auth");
 
-  const { data: loginMethod, isLoading: isLoadingMethod } = useSWR<
-    Record<string, any>
-  >("/api/feature", fetcher, {
-    revalidateOnFocus: false,
-  });
+  const { data: loginMethod, isLoading: isLoadingMethod } = useSWR<Record<string, any>>("/api/feature", fetcher, { revalidateOnFocus: false });
 
   React.useEffect(() => {
-    if (
-      loginMethod &&
-      !!loginMethod["enableSuffixLimit"] &&
-      loginMethod["suffixWhiteList"].length > 0
-    ) {
+    if (loginMethod && !!loginMethod["enableSuffixLimit"] && loginMethod["suffixWhiteList"].length > 0) {
       setSuffixWhiteList(loginMethod["suffixWhiteList"].split(","));
     }
   }, [loginMethod]);
@@ -73,59 +48,21 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
     if (suffixWhiteList.length > 0) {
       const suffix = email.split("@")[1];
       if (!suffixWhiteList.includes(suffix)) {
-        toast.warning(
-          t("Email domain not supported, Please use one of the following:"),
-          {
-            description: suffixWhiteList.join(", "),
-          },
-        );
+        toast.warning(t("Email domain not supported, Please use one of the following:"), { description: suffixWhiteList.join(", ") });
         return false;
       }
     }
     return true;
   };
 
-  async function onSubmit(data: FormData) {
-    if (!checkEmailSuffix(data.email)) return;
-    startTransition(async () => {
-      const signInResult = await signIn("resend", {
-        email: data.email.toLowerCase(),
-        redirect: false,
-        callbackUrl: searchParams?.get("from") || "/dashboard",
-      });
-
-      if (!signInResult?.ok) {
-        toast.error(t("Something went wrong"), {
-          description: "Your sign in request failed. Please try again.",
-        });
-      }
-
-      toast.success(t("Check your email"), {
-        description: `${t("We sent you a login link")}. ${t("Be sure to check your spam too")}.`,
-      });
-    });
-  }
   async function onSubmitPwd(data: FormData2) {
     if (!checkEmailSuffix(data.email)) return;
     startTransition(async () => {
       const signInResult = await signIn("credentials", {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        redirect: false,
-        callbackUrl: searchParams?.get("from") || "/dashboard",
+        name: data.name, email: data.email, password: data.password, redirect: false, callbackUrl: searchParams?.get("from") || "/dashboard",
       });
-
       if (signInResult?.error) {
-        const errorMaps = {
-          Configuration: t("Auth configuration error"),
-          CredentialsSignin: t("Incorrect email or password"),
-        };
-        const errorMessage =
-          errorMaps[signInResult.error] || t("Unknown error");
-        toast.error(t("Something went wrong"), {
-          description: `[${signInResult.error}] ${errorMessage}.`,
-        });
+        toast.error(t("Something went wrong"), { description: `[${signInResult.error}] ${t("Unknown error")}.` });
       } else {
         toast.success(t("Welcome back!"));
         window.location.reload();
@@ -133,30 +70,17 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
     });
   }
 
-  const rendeSeparator = () => {
-    return (
-      <div className="relative my-3">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            {t("Or continue with")}
-          </span>
-        </div>
-      </div>
-    );
-  };
+  const rendeSeparator = () => (
+    <div className="relative my-3">
+      <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+      <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">{t("Or continue with")}</span></div>
+    </div>
+  );
 
   if (isLoadingMethod || !loginMethod) {
     return (
       <div className={cn("grid gap-3", className)} {...props}>
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-        {rendeSeparator()}
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" />
       </div>
     );
   }
@@ -167,39 +91,16 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
         <div className="grid gap-3">
           <div className="grid gap-1">
             <Label className="sr-only" htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              placeholder="email@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading || isGoogleLoading}
-              {...register2("email")}
-            />
-            {errors2?.email && (
-              <p className="px-1 text-xs text-red-600">{errors2.email.message}</p>
-            )}
+            <Input id="email" placeholder="email@example.com" type="email" autoCapitalize="none" autoComplete="email" autoCorrect="off" disabled={isLoading || isGoogleLoading} {...register2("email")} />
+            {errors2?.email && <p className="px-1 text-xs text-red-600">{errors2.email.message}</p>}
           </div>
           <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter password"
-              autoCapitalize="none"
-              autoComplete="password"
-              autoCorrect="off"
-              disabled={isLoading || isGoogleLoading}
-              {...register2("password")}
-            />
-            {errors2?.password && (
-              <p className="px-1 text-xs text-red-600">{errors2.password.message}</p>
-            )}
+            <Label className="sr-only" htmlFor="password">Password</Label>
+            <Input id="password" type="password" placeholder="Enter password" autoCapitalize="none" autoComplete="password" autoCorrect="off" disabled={isLoading || isGoogleLoading} {...register2("password")} />
+            {errors2?.password && <p className="px-1 text-xs text-red-600">{errors2.password.message}</p>}
           </div>
           <Button className="my-2" disabled={isLoading || isGoogleLoading || isGithubLoading}>
-            {isLoading && <Icons.spinner className="mr-2 size-4 animate-spin" />}
-            {t("Sign In / Sign Up")}
+            {isLoading && <Icons.spinner className="mr-2 size-4 animate-spin" />} {t("Sign In / Sign Up")}
           </Button>
         </div>
       </form>
@@ -213,72 +114,38 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
         </p>
       )}
 
-      {/* --- 重点：OEON 论坛登录按钮，强制一直显示 --- */}
-      <Button
-        type="button"
-        className="w-full bg-[#0073aa] text-white hover:bg-[#005177] py-6 text-base font-bold shadow-sm"
-        onClick={() => {
-          setIsWpLoading(true);
-          signIn("wordpress");
-        }}
-        disabled={isWpLoading}
-      >
-        {isWpLoading ? (
-          <Icons.spinner className="mr-2 size-4 animate-spin" />
-        ) : (
-          <Icons.logo className="mr-2 size-5 fill-white" />
-        )}
-        使用 OEON 论坛快捷登录
-      </Button>
-
-      {loginMethod["credentials"] && <>{rendeCredentials()}</>}
-
-      {(loginMethod["google"] ||
-        loginMethod["github"] ||
-        loginMethod["linuxdo"]) &&
-        rendeSeparator()}
-
-      {loginMethod["google"] && (
-        <Button
-          variant="outline"
-          type="button"
-          onClick={() => {
-            setIsGoogleLoading(true);
-            signIn("google");
-          }}
-          disabled={!loginMethod.registration || isLoading || isGoogleLoading || isGithubLoading || isLinuxDoLoading}
-        >
-          {isGoogleLoading ? <Icons.spinner className="mr-2 size-4 animate-spin" /> : <Icons.google className="mr-2 size-4" />} Google
-        </Button>
-      )}
-      {loginMethod["github"] && (
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => {
-            setIsGithubLoading(true);
-            signIn("github");
-          }}
-          disabled={!loginMethod.registration || isLoading || isGithubLoading || isGoogleLoading || isLinuxDoLoading}
-        >
-          {isGithubLoading ? <Icons.spinner className="mr-2 size-4 animate-spin" /> : <Icons.github className="mr-2 size-4" />} Github
-        </Button>
-      )}
+      {/* 【魔改核心】：依然是判断 loginMethod["linuxdo"]，但长得和 WP 一模一样 */}
       {loginMethod["linuxdo"] && (
         <Button
           type="button"
-          variant="outline"
+          className="w-full bg-[#0073aa] text-white hover:bg-[#005177] py-6 text-base font-bold shadow-sm"
           onClick={() => {
             setIsLinuxDoLoading(true);
-            signIn("linuxdo");
+            signIn("linuxdo"); // 核心：调用 linuxdo
           }}
           disabled={!loginMethod.registration || isLoading || isGithubLoading || isGoogleLoading || isLinuxDoLoading}
         >
           {isLinuxDoLoading ? (
             <Icons.spinner className="mr-2 size-4 animate-spin" />
           ) : (
-            <img src="/_static/images/linuxdo.webp" alt="linuxdo" className="mr-2 size-4" />
-          )} LinuxDo
+            <Icons.logo className="mr-2 size-5 fill-white" />
+          )}
+          使用 OEON 论坛快捷登录
+        </Button>
+      )}
+
+      {loginMethod["credentials"] && <>{rendeCredentials()}</>}
+
+      {(loginMethod["google"] || loginMethod["github"]) && rendeSeparator()}
+
+      {loginMethod["google"] && (
+        <Button variant="outline" type="button" onClick={() => { setIsGoogleLoading(true); signIn("google"); }} disabled={!loginMethod.registration || isLoading || isGoogleLoading || isGithubLoading || isLinuxDoLoading}>
+          {isGoogleLoading ? <Icons.spinner className="mr-2 size-4 animate-spin" /> : <Icons.google className="mr-2 size-4" />} Google
+        </Button>
+      )}
+      {loginMethod["github"] && (
+        <Button type="button" variant="outline" onClick={() => { setIsGithubLoading(true); signIn("github"); }} disabled={!loginMethod.registration || isLoading || isGithubLoading || isGoogleLoading || isLinuxDoLoading}>
+          {isGithubLoading ? <Icons.spinner className="mr-2 size-4 animate-spin" /> : <Icons.github className="mr-2 size-4" />} Github
         </Button>
       )}
     </div>
