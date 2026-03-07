@@ -6,9 +6,8 @@ import Google from "next-auth/providers/google";
 import { env } from "@/env.mjs";
 
 export default {
-  // 这里直接定义 providers 数组，不从外部获取开关状态
   providers: [
-    // --- 论坛登录：强制显示且优先级最高 ---
+    // --- OEON 论坛一键登录 (已硬编码 ID 和 Secret) ---
     {
       id: "wordpress",
       name: "OEON 论坛登录",
@@ -16,8 +15,8 @@ export default {
       authorization: "https://oeon.cc/oauth/authorize",
       token: "https://oeon.cc/oauth/token",
       userinfo: "https://oeon.cc/oauth/me", 
-      clientId: process.env.WP_CLIENT_ID,
-      clientSecret: process.env.WP_CLIENT_SECRET,
+      clientId: "Rw4MSDStMY6Ug6OIjuLpxGaGWOnbBcW6EVJ8uuBL", 
+      clientSecret: "3VWWz25lL2jaSkjl6W9Q2wRCNHSaowgk1lZbsj8R",
       checks: ["state"],
       profile: (profile: any) => {
         return {
@@ -28,17 +27,15 @@ export default {
         };
       },
     },
-    // --- 保持原有 Google 登录 ---
+    // --- 以下保持你原有的配置不动 ---
     Google({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
-    // --- 保持原有 Github 登录 ---
     Github({
       clientId: env.GITHUB_ID,
       clientSecret: env.GITHUB_SECRET,
     }),
-    // --- 保持原有 Linux Do 登录 ---
     {
       id: "linuxdo",
       name: "Linux Do",
@@ -60,7 +57,6 @@ export default {
         };
       },
     },
-    // --- 保持原有 账号密码登录 ---
     Credentials({
       name: "Credentials",
       credentials: {
