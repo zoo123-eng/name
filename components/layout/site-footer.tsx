@@ -17,21 +17,20 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
         <div className="col-span-full flex flex-col items-start sm:col-span-1 md:col-span-2">
           <div className="flex items-center gap-6 md:gap-10">
             <Link href="/" className="flex items-center space-x-1.5">
-              <Icons.logo />
+              <Icons.logo />  {/* 如果 logo 是 wr.do 的图标，可替换 public/logo.svg */}
               <h1
                 style={{ fontFamily: "Bahamas Bold" }}
                 className="text-2xl font-bold"
               >
-                {siteConfig.name}
+                OEON.CC  {/* ← 这里改成 OEON.CC */}
               </h1>
             </Link>
           </div>
           <div className="mt-4 text-sm">
-            All-in-one domain platform with short links, temp email,
-            <br />
-            subdomain management, file storage, and open APIs.
+            OEON.CC 提供的短链接、域名邮箱、文件存储等一站式服务，由 OEON.CC 论坛支持。
           </div>
-          <GitHubStarsWithSuspense className="mt-4" owner="oiov" repo="wr.do" />
+          {/* GitHub stars 如果不需要，可注释 */}
+          {/* <GitHubStarsWithSuspense className="mt-4" owner="oiov" repo="wr.do" /> */}
         </div>
         {footerLinks.map((section) => (
           <div key={section.title}>
@@ -60,14 +59,14 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             className="mx-3 mt-auto flex items-center gap-1 pb-3 pt-6 font-mono text-xs text-muted-foreground/90"
             style={{ fontFamily: "Bahamas Bold" }}
           >
-            Copyright {new Date().getFullYear()} &copy;
+            Copyright {new Date().getFullYear()} ©
             <Link
               href={siteConfig.url}
               target="_blank"
               rel="noreferrer"
               className="font-medium underline-offset-2 hover:underline"
             >
-              {siteConfig.name}
+              OEON.CC  {/* ← 这里改成 OEON.CC */}
             </Link>
             <Link
               href={`${siteConfig.links.github}/releases/latest`}
