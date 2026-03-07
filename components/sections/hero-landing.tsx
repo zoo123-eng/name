@@ -72,7 +72,7 @@ export default function HeroLanding({
             )}
           >
             <span>QQ群聊</span>
-            <Icons.messageCircle className="size-5" /> {/* 如果没有 messageCircle 图标，可删或换 Icons.users */}
+            <Icons.messageCircle className="size-5" /> {/* 如果图标不存在，删掉这行 */}
           </Link>
 
           {/* 登录/仪表盘按钮 */}
@@ -84,4 +84,56 @@ export default function HeroLanding({
               "px-6 text-[15px] font-semibold",
             )}
           >
-            <span>{userId ? t("Dashboard") : "立即开始使用 OEON
+            <span>{userId ? t("Dashboard") : "立即开始使用 OEON.CC"}</span>
+          </Link>
+        </div>
+
+        {/* 产品预览 - 如果不需要，注释下面这行 */}
+        {/* <PreviewLanding /> */}
+
+        {/* 已激活域名滚动展示 */}
+        <div className="group relative m-auto hidden max-w-4xl md:block">
+          <div className="flex flex-col items-center md:flex-row">
+            <div className="mb-4 hidden md:mb-0 md:block md:max-w-44 md:border-r md:border-gray-600 md:pr-6">
+              <p className="text-end text-sm text-blue-600">
+                {t("Activated Domains")}
+              </p>
+            </div>
+            <div className="relative py-6 md:w-[calc(100%-11rem)]">
+              <InfiniteSlider durationOnHover={20} duration={40} gap={112}>
+                {isLoading
+                  ? [1, 2, 3, 4].map(() => (
+                      <span
+                        className="text-lg"
+                        style={{ fontFamily: "Bahamas Bold" }}
+                      >
+                        oeon.cc
+                      </span>
+                    ))
+                  : shortDomains?.map((domain) => (
+                      <span
+                        className="text-lg"
+                        style={{ fontFamily: "Bahamas Bold" }}
+                      >
+                        {domain.domain_name}
+                      </span>
+                    ))}
+              </InfiniteSlider>
+
+              <ProgressiveBlur
+                className="pointer-events-none absolute left-0 top-0 h-full w-20"
+                direction="left"
+                blurIntensity={1}
+              />
+              <ProgressiveBlur
+                className="pointer-events-none absolute right-0 top-0 h-full w-20"
+                direction="right"
+                blurIntensity={1}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
