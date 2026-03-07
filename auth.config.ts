@@ -14,25 +14,22 @@ export default {
       clientId: env.GITHUB_ID,
       clientSecret: env.GITHUB_SECRET,
     }),
-    // 【魔改核心】：外表是 Linux Do，内核是 OEON 论坛
     {
-      id: "linuxdo", // ⚠️ 必须保留这个 ID，用来骗过系统校验
-      name: "OEON 论坛", // 授权页显示的名字
+      id: "linuxdo", // 绝对不动这个 ID
+      name: "OEON 论坛",
       type: "oauth",
       authorization: "https://oeon.cc/oauth/authorize",
       token: "https://oeon.cc/oauth/token",
-      userinfo: "https://oeon.cc/wp-json/wp-oauth/me", 
-      clientId: env.WP_CLIENT_ID || "missing", // 直接读取 WP 的环境变量
-      clientSecret: env.WP_CLIENT_SECRET || "missing",
-      checks: ["none"], // ⚠️ 必须是 none，规避 WP 插件验证问题
+      userinfo: "https://oeon.cc/wp-json/wp-oauth/me",
+      clientId: env.LinuxDo_CLIENT_ID,
+      clientSecret: env.LinuxDo_CLIENT_SECRET,
+      checks: ["none"], 
       profile: (profile: any) => {
-        // 按照 WordPress 的格式解析数据
         const user = profile.user || profile.data || profile;
-        const userId = (user.ID || user.id || "").toString();
         return {
-          id: userId,
+          id: (user.ID || user.id || "").toString(),
           name: user.display_name || user.user_login || "User",
-          email: user.user_email || user.email || `${userId}@oeon.cc`,
+          email: user.user_email || user.email || `${user.id}@oeon.cc`,
           image: user.avatar_url || null,
           role: "USER",
           active: 1,
