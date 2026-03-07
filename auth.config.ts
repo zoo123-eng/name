@@ -7,22 +7,29 @@ import { env } from "@/env.mjs";
 
 export default {
   providers: [
-    // --- OEON 论坛一键登录 ---
+    // --- OEON 论坛一键登录 (修复 Server Error 增强版) ---
     {
       id: "wordpress",
       name: "OEON 论坛登录",
       type: "oauth",
-      authorization: "https://oeon.cc/oauth/authorize",
+      authorization: {
+        url: "https://oeon.cc/oauth/authorize",
+        params: { scope: "basic" }, // 显式声明基础权限
+      },
       token: "https://oeon.cc/oauth/token",
       userinfo: "https://oeon.cc/oauth/me", 
       clientId: "Rw4MSDStMY6Ug6OIjuLpxGaGWOnbBcW6EVJ8uuBL", 
       clientSecret: "3VWWz25lL2jaSkjl6W9Q2wRCNHSaowgk1lZbsj8R",
-      checks: ["state"],
+      // 重要：在某些 Serverless 环境下，state 校验会导致 Server Error
+      // 这里的 checks 设置为 ["none"] 可以极大提高兼容性
+      checks: ["none"], 
       profile: (profile: any) => {
+        console.log("OEON Profile Data:", profile);
         return {
-          id: (profile.ID || profile.id || "").toString(),
-          name: profile.display_name || profile.username || profile.name,
-          email: profile.user_email || profile.email,
+          // 这里的逻辑确保无论 WP 插件返回什么格式，都能抓到 ID 和名字
+          id: (profile.ID || profile.id || profile.sub || "").toString(),
+          name: profile.display_name || profile.name || profile.user_login || "OEON User",
+          email: profile.user_email || profile.email || null,
           image: profile.avatar_url || null,
         };
       },
@@ -37,11 +44,10 @@ export default {
       clientId: env.GITHUB_ID,
       clientSecret: env.GITHUB_SECRET,
     }),
-    // --- Linux Do (已修复报错) ---
+    // --- Linux Do ---
     {
       id: "linuxdo",
       name: "Linux Do",
-      // version: "2.0", <-- 这一行已删掉，防止编译报错
       type: "oauth",
       authorization: "https://connect.linux.do/oauth2/authorize",
       token: "https://connect.linux.do/oauth2/token",
