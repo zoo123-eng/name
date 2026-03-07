@@ -47,6 +47,7 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
   const [isGithubLoading, setIsGithubLoading] = React.useState<boolean>(false);
   const [isLinuxDoLoading, setIsLinuxDoLoading] =
     React.useState<boolean>(false);
+  const [isWpLoading, setIsWpLoading] = React.useState<boolean>(false);
   const [suffixWhiteList, setSuffixWhiteList] = React.useState<string[]>([]);
   const searchParams = useSearchParams();
 
@@ -115,8 +116,6 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
         callbackUrl: searchParams?.get("from") || "/dashboard",
       });
 
-      // console.log("[signInResult]", signInResult);
-
       if (signInResult?.error) {
         const errorMaps = {
           Configuration: t("Auth configuration error"),
@@ -130,7 +129,6 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
       } else {
         toast.success(t("Welcome back!"));
         window.location.reload();
-        // router.push(searchParams?.get("from") || "/dashboard");
       }
     });
   }
@@ -163,58 +161,12 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
     );
   }
 
-  const rendeResend = () =>
-    loginMethod["resend"] && (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid gap-2">
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              placeholder="name@example.com"
-              type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
-              disabled={isLoading || isGoogleLoading}
-              {...register("email")}
-            />
-            {errors?.email && (
-              <p className="px-1 text-xs text-red-600">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-          <Button
-            className="my-2"
-            disabled={
-              !loginMethod.registration ||
-              isLoading ||
-              isGoogleLoading ||
-              isGithubLoading
-            }
-          >
-            {isLoading && (
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
-            )}
-            {type === "register"
-              ? t("Sign Up with Email")
-              : t("Sign In with Email")}
-          </Button>
-        </div>
-      </form>
-    );
-
   const rendeCredentials = () =>
     loginMethod["credentials"] && (
       <form onSubmit={handleSubmit2(onSubmitPwd)}>
         <div className="grid gap-3">
           <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Email
-            </Label>
+            <Label className="sr-only" htmlFor="email">Email</Label>
             <Input
               id="email"
               placeholder="email@example.com"
@@ -226,15 +178,11 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
               {...register2("email")}
             />
             {errors2?.email && (
-              <p className="px-1 text-xs text-red-600">
-                {errors2.email.message}
-              </p>
+              <p className="px-1 text-xs text-red-600">{errors2.email.message}</p>
             )}
           </div>
           <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Password
-            </Label>
+            <Label className="sr-only" htmlFor="email">Password</Label>
             <Input
               id="password"
               type="password"
@@ -246,25 +194,13 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
               {...register2("password")}
             />
             {errors2?.password && (
-              <p className="px-1 text-xs text-red-600">
-                {errors2.password.message}
-              </p>
+              <p className="px-1 text-xs text-red-600">{errors2.password.message}</p>
             )}
           </div>
-
-          <Button
-            className="my-2"
-            disabled={isLoading || isGoogleLoading || isGithubLoading}
-          >
-            {isLoading && (
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
-            )}
+          <Button className="my-2" disabled={isLoading || isGoogleLoading || isGithubLoading}>
+            {isLoading && <Icons.spinner className="mr-2 size-4 animate-spin" />}
             {t("Sign In / Sign Up")}
           </Button>
-
-          {/* <p className="rounded-md border border-dashed bg-muted px-3 py-2 text-xs text-muted-foreground">
-            📢 {t("Unregistered users will automatically create an account")}.
-          </p> */}
         </div>
       </form>
     );
@@ -277,12 +213,29 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
         </p>
       )}
 
+      {/* --- 重点：OEON 论坛登录按钮，强制一直显示 --- */}
+      <Button
+        type="button"
+        className="w-full bg-[#0073aa] text-white hover:bg-[#005177] py-6 text-base font-bold shadow-sm"
+        onClick={() => {
+          setIsWpLoading(true);
+          signIn("wordpress");
+        }}
+        disabled={isWpLoading}
+      >
+        {isWpLoading ? (
+          <Icons.spinner className="mr-2 size-4 animate-spin" />
+        ) : (
+          <Icons.logo className="mr-2 size-5 fill-white" />
+        )}
+        使用 OEON 论坛快捷登录
+      </Button>
+
       {loginMethod["credentials"] && <>{rendeCredentials()}</>}
 
       {(loginMethod["google"] ||
         loginMethod["github"] ||
         loginMethod["linuxdo"]) &&
-        (loginMethod["resend"] || loginMethod["credentials"]) &&
         rendeSeparator()}
 
       {loginMethod["google"] && (
@@ -293,20 +246,9 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
             setIsGoogleLoading(true);
             signIn("google");
           }}
-          disabled={
-            !loginMethod.registration ||
-            isLoading ||
-            isGoogleLoading ||
-            isGithubLoading ||
-            isLinuxDoLoading
-          }
+          disabled={!loginMethod.registration || isLoading || isGoogleLoading || isGithubLoading || isLinuxDoLoading}
         >
-          {isGoogleLoading ? (
-            <Icons.spinner className="mr-2 size-4 animate-spin" />
-          ) : (
-            <Icons.google className="mr-2 size-4" />
-          )}{" "}
-          Google
+          {isGoogleLoading ? <Icons.spinner className="mr-2 size-4 animate-spin" /> : <Icons.google className="mr-2 size-4" />} Google
         </Button>
       )}
       {loginMethod["github"] && (
@@ -317,20 +259,9 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
             setIsGithubLoading(true);
             signIn("github");
           }}
-          disabled={
-            !loginMethod.registration ||
-            isLoading ||
-            isGithubLoading ||
-            isGoogleLoading ||
-            isLinuxDoLoading
-          }
+          disabled={!loginMethod.registration || isLoading || isGithubLoading || isGoogleLoading || isLinuxDoLoading}
         >
-          {isGithubLoading ? (
-            <Icons.spinner className="mr-2 size-4 animate-spin" />
-          ) : (
-            <Icons.github className="mr-2 size-4" />
-          )}{" "}
-          Github
+          {isGithubLoading ? <Icons.spinner className="mr-2 size-4 animate-spin" /> : <Icons.github className="mr-2 size-4" />} Github
         </Button>
       )}
       {loginMethod["linuxdo"] && (
@@ -341,42 +272,15 @@ export function UserAuthForm({ className, type, ...props }: UserAuthFormProps) {
             setIsLinuxDoLoading(true);
             signIn("linuxdo");
           }}
-          disabled={
-            !loginMethod.registration ||
-            isLoading ||
-            isGithubLoading ||
-            isGoogleLoading ||
-            isLinuxDoLoading
-          }
+          disabled={!loginMethod.registration || isLoading || isGithubLoading || isGoogleLoading || isLinuxDoLoading}
         >
           {isLinuxDoLoading ? (
             <Icons.spinner className="mr-2 size-4 animate-spin" />
           ) : (
-            <img
-              src="/_static/images/linuxdo.webp"
-              alt="linuxdo"
-              className="mr-2 size-4"
-            />
-          )}{" "}
-          LinuxDo
+            <img src="/_static/images/linuxdo.webp" alt="linuxdo" className="mr-2 size-4" />
+          )} LinuxDo
         </Button>
       )}
-
-      {/* {loginMethod["resend"] && loginMethod["credentials"] ? (
-        <Tabs defaultValue="resend">
-          <TabsList className="mb-2 w-full justify-center">
-            <TabsTrigger value="resend">{t("Email Code")}</TabsTrigger>
-            <TabsTrigger value="password">{t("Password")}</TabsTrigger>
-          </TabsList>
-          <TabsContent value="resend">{rendeResend()}</TabsContent>
-          <TabsContent value="password">{rendeCredentials()}</TabsContent>
-        </Tabs>
-      ) : (
-        <>
-          {rendeResend()}
-          {rendeCredentials()}
-        </>
-      )} */}
     </div>
   );
 }
