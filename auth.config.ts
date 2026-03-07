@@ -7,7 +7,7 @@ import { env } from "@/env.mjs";
 
 export default {
   providers: [
-    // --- OEON 论坛一键登录 (已硬编码 ID 和 Secret) ---
+    // --- OEON 论坛一键登录 ---
     {
       id: "wordpress",
       name: "OEON 论坛登录",
@@ -27,19 +27,21 @@ export default {
         };
       },
     },
-    // --- 以下保持你原有的配置不动 ---
+    // --- Google ---
     Google({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
+    // --- Github ---
     Github({
       clientId: env.GITHUB_ID,
       clientSecret: env.GITHUB_SECRET,
     }),
+    // --- Linux Do (已修复报错) ---
     {
       id: "linuxdo",
       name: "Linux Do",
-      version: "2.0",
+      // version: "2.0", <-- 这一行已删掉，防止编译报错
       type: "oauth",
       authorization: "https://connect.linux.do/oauth2/authorize",
       token: "https://connect.linux.do/oauth2/token",
@@ -57,6 +59,7 @@ export default {
         };
       },
     },
+    // --- Credentials ---
     Credentials({
       name: "Credentials",
       credentials: {
