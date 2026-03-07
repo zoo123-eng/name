@@ -8,11 +8,10 @@ import useSWR from "swr";
 import { siteConfig } from "@/config/site";
 import { cn, fetcher } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Icons } from "@/components/shared/icons";
 
 import { InfiniteSlider } from "../ui/infinite-slider";
 import { ProgressiveBlur } from "../ui/progressive-blur";
-// import PreviewLanding from "./preview-landing";
+// import PreviewLanding from "./preview-landing";  // 如果不需要预览，可保持注释
 
 export default function HeroLanding({
   userId,
@@ -33,6 +32,7 @@ export default function HeroLanding({
   return (
     <section className="relative space-y-6 py-12 sm:py-16">
       <div className="container flex max-w-screen-lg flex-col items-center gap-5 text-center">
+        {/* 顶部小按钮 */}
         <Link
           href="https://oeon.cc/"
           target="_blank"
@@ -45,6 +45,7 @@ export default function HeroLanding({
           由 OEON.CC 论坛提供运行
         </Link>
 
+        {/* 主标题 */}
         <h1 className="text-balance font-satoshi text-[40px] font-black leading-[1.15] tracking-tight sm:text-5xl md:text-6xl md:leading-[1.15]">
           OEON.CC
           <span className="bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
@@ -52,10 +53,12 @@ export default function HeroLanding({
           </span>
         </h1>
 
+        {/* 副标题 */}
         <p className="max-w-2xl text-balance text-muted-foreground sm:text-lg">
           快速创建短链接、自定义域名服务，安全稳定，由 OEON.CC 论坛支持。
         </p>
 
+        {/* 按钮区：原“文档”按钮改成“QQ群聊”，淡蓝色，无图标 */}
         <div className="mb-10 flex items-center justify-center gap-4 flex-wrap">
           <Link
             href="https://qun.qq.com/universal-share/share?ac=1&authKey=3yrjeQp0GpSEnVMwcqWSI1Apd%2BIHePoVnNYWZtk6kfL9NXxV6zbcQNxfPgNfgNVL&busi_data=eyJncm91cENvZGUiOiIxMDA0NTkwNjA1IiwidG9rZW4iOiJFcThhR1lralJPdDRwTzBBbWZBSUYvNEpldnlwb3ZmS1lXaktJMElUem5vUzVHWVJmZ2dWbkVKcHlwME1nTVRJIiwidWluIjoiMTQ5Mzk5MDU4NCJ9&data=RiuhusRkC1tViesrUz9YDSJbQPXqBUCgYcYZYpQOXQgNcfS2T5o7uwbqzJFl0gpqiuG6muar3OdvbPPHyTP6bA&svctype=4&tempid=h5_group_info"
@@ -83,6 +86,7 @@ export default function HeroLanding({
 
         {/* <PreviewLanding /> */}
 
+        {/* 域名滚动展示 */}
         <div className="group relative m-auto hidden max-w-4xl md:block">
           <div className="flex flex-col items-center md:flex-row">
             <div className="mb-4 hidden md:mb-0 md:block md:max-w-44 md:border-r md:border-gray-600 md:pr-6">
