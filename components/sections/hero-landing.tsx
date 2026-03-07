@@ -1,6 +1,5 @@
 "use client";
 
-import { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -9,7 +8,6 @@ import useSWR from "swr";
 import { siteConfig } from "@/config/site";
 import { cn, fetcher } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { Icons } from "@/components/shared/icons";
 
 import {
   Collapsible,
@@ -20,7 +18,6 @@ import { InfiniteSlider } from "../ui/infinite-slider";
 import { ProgressiveBlur } from "../ui/progressive-blur";
 import { Separator } from "../ui/separator";
 import PreviewLanding from "./preview-landing";
-import UrlShortener from "./url-shortener";
 import EmailManagerExp from "./email";
 
 export default function HeroLanding({
@@ -42,7 +39,7 @@ export default function HeroLanding({
   return (
     <section className="relative space-y-6 py-12 sm:py-16">
       <div className="container flex max-w-screen-lg flex-col items-center gap-5 text-center">
-        {/* 顶部小按钮：火箭图标 */}
+        {/* 顶部小按钮 */}
         <Link
           href="https://oeon.cc/"
           target="_blank"
@@ -63,7 +60,7 @@ export default function HeroLanding({
         </h1>
 
         <p className="max-w-2xl text-balance text-muted-foreground sm:text-lg">
-          快速创建短链接、自定义域名邮箱、文件存储等服务，安全稳定，由 OEON.CC 论坛支持。
+          OEON.CC 提供的子域名托管、域名邮箱服务，安全稳定，由 OEON.CC 论坛支持。
         </p>
 
         <div className="mb-10 flex items-center justify-center gap-4 flex-wrap">
@@ -136,69 +133,68 @@ export default function HeroLanding({
         </div>
       </div>
 
-      {/* 全部产品介绍恢复在这里 */}
-      <LandingImages />
-    </section>
-  );
-}
-
-// 恢复 LandingImages 函数（完整版，从原始代码复制回来）
-export function LandingImages() {
-  const t = useTranslations("Landing");
-  return (
-    <>
+      {/* 只保留两个模块：子域名托管 + 域名邮箱 */}
       <div className="mx-auto w-full max-w-5xl px-6">
         <div className="flex flex-col items-center gap-4 text-center">
           <h2 className="font-mono font-semibold uppercase tracking-wider text-blue-600">
             {t("FEATURES")}
           </h2>
           <p className="text-balance text-2xl font-semibold text-muted-foreground">
-            {"All In One Means"}
+            核心服务
           </p>
         </div>
 
-        {/* Short Link Service */}
+        {/* 子域名托管服务 */}
         <div className="mt-16 grid gap-12 sm:px-12 lg:grid-cols-12 lg:gap-24 lg:px-0">
           <div className="items-start px-2 py-4 text-left lg:col-span-5">
             <h3 className="mb-4 text-xl font-bold text-blue-500 md:text-3xl">
-              {t("shortLinkService")}
+              子域名托管服务
             </h3>
             <p className="font-semibold text-muted-foreground">
-              {t("shortLinkDescription")}
+              轻松创建和管理自定义子域名，支持快速解析和灵活配置
             </p>
 
             <div className="mt-6">
               <Collapsible>
                 <CollapsibleTrigger className="flex w-full items-center py-3 hover:underline">
-                  <Icons.link className="mr-2 size-4" /> {t("customSuffix")}
+                  <Icons.link className="mr-2 size-4" />
+                  自定义子域名
                   <Icons.chevronDown className="ml-auto size-4" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="pb-3 text-sm text-muted-foreground">
-                  {t("customSuffixDetail")}
+                  完全自定义子域名后缀，支持多级子域名，适合品牌展示或个人站点
                 </CollapsibleContent>
               </Collapsible>
               <Separator />
               <Collapsible>
                 <CollapsibleTrigger className="flex w-full items-center py-3 hover:underline">
-                  <Icons.lineChart className="mr-2 size-4" /> {t("realtimeStats")}
+                  <Icons.clock className="mr-2 size-4" />
+                  即时生效
                   <Icons.chevronDown className="ml-auto size-4" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="pb-3 text-sm text-muted-foreground">
-                  {t("realtimeStatsDetail")}
+                  新建子域名后立即生效，无需等待 DNS 传播
                 </CollapsibleContent>
               </Collapsible>
               <Separator />
-              {/* 其他特性折叠项... 可继续复制原始代码的剩余部分 */}
+              <Collapsible>
+                <CollapsibleTrigger className="flex w-full items-center py-3 hover:underline">
+                  <Icons.shieldCheck className="mr-2 size-4" />
+                  安全管理
+                  <Icons.chevronDown className="ml-auto size-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pb-3 text-sm text-muted-foreground">
+                  支持权限控制和访问日志，防止滥用
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </div>
           <div className="text-clip rounded-xl border py-4 md:p-3.5 lg:col-span-7">
             <div className="flex size-full items-center justify-center rounded-lg border p-3 md:bg-muted/50">
               <Image
                 className="size-[350px] rounded-lg transition-all hover:border hover:opacity-90 hover:shadow-xl"
-                alt={t("exampleImageAlt")}
-                src="/_static/landing/link.svg"
-                placeholder="blur"
-                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAACxMAAAsTAQCanBgAAACCSURBVBhXZYzBCgIxDEQnTdPau+hveBB/XtiLn+NJQdoNS2Orq6zuO0zgZRhSVbvegeAJGx7hvUeMAUSEzu1RUesEKuNkIgyrFaoFzB4i8i1+cDEwXHOuRc65lbVpe38XuPm+YMdIKa3WOj9F60vWcj0IOg8Xy7ngdDxgv9vO+h/gCZNAKuSRdQ2rAAAAAElFTkSuQmCC"
+                alt="子域名托管示例"
+                src="/_static/landing/hosting.svg"
                 width={280}
                 height={280}
               />
@@ -206,28 +202,57 @@ export function LandingImages() {
           </div>
         </div>
 
-        {/* Domain Email Service */}
+        {/* 域名邮箱服务 */}
         <div className="mt-16 grid gap-12 sm:px-12 lg:grid-cols-12 lg:gap-24 lg:px-0">
           <div className="items-start px-2 py-4 text-left lg:col-span-5">
             <h3 className="mb-4 text-xl font-bold text-blue-500 md:text-3xl">
-              {t("domainEmail")}
+              域名邮箱服务
             </h3>
             <p className="font-semibold text-muted-foreground">
-              {t("domainEmailDescription")}
+              使用自己的域名收发邮件，专业又个性化
             </p>
 
             <div className="mt-6">
-              {/* 邮箱特性折叠列表... 复制原始代码剩余部分 */}
+              <Collapsible>
+                <CollapsibleTrigger className="flex w-full items-center py-3 hover:underline">
+                  <Icons.mail className="mr-2 size-4" />
+                  自定义邮箱地址
+                  <Icons.chevronDown className="ml-auto size-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pb-3 text-sm text-muted-foreground">
+                  任意@yourdomain.com 邮箱地址，支持别名和转发
+                </CollapsibleContent>
+              </Collapsible>
+              <Separator />
+              <Collapsible>
+                <CollapsibleTrigger className="flex w-full items-center py-3 hover:underline">
+                  <Icons.inbox className="mr-2 size-4" />
+                  无限容量
+                  <Icons.chevronDown className="ml-auto size-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pb-3 text-sm text-muted-foreground">
+                  无存储限制，随时收发重要邮件
+                </CollapsibleContent>
+              </Collapsible>
+              <Separator />
+              <Collapsible>
+                <CollapsibleTrigger className="flex w-full items-center py-3 hover:underline">
+                  <Icons.shieldCheck className="mr-2 size-4" />
+                  反垃圾与安全
+                  <Icons.chevronDown className="ml-auto size-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pb-3 text-sm text-muted-foreground">
+                  内置反垃圾过滤和加密传输，保护隐私
+                </CollapsibleContent>
+              </Collapsible>
             </div>
           </div>
           <div className="text-clip rounded-xl border py-4 md:p-3.5 lg:col-span-7">
             <div className="flex size-full items-center justify-center rounded-lg border p-3 md:bg-muted/50">
               <Image
                 className="size-[350px] rounded-lg transition-all hover:border hover:opacity-90 hover:shadow-xl"
-                alt={t("exampleImageAlt")}
+                alt="域名邮箱示例"
                 src="/_static/landing/email.svg"
-                placeholder="blur"
-                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAACxMAAAsTAQCanBgAAACCSURBVBhXZYzBCgIxDEQnTdPau+hveBB/XtiLn+NJQdoNS2Orq6zuO0zgZRhSVbvegeAJGx7hvUeMAUSEzu1RUesEKuNkIgyrFaoFzB4i8i1+cDEwXHOuRc65lbVpe38XuPm+YMdIKa3WOj9F60vWcj0IOg8Xy7ngdDxgv9vO+h/gCZNAKuSRdQ2rAAAAAElFTkSuQmCC"
                 width={280}
                 height={280}
               />
@@ -235,15 +260,12 @@ export function LandingImages() {
           </div>
         </div>
 
-        {/* 继续添加其他功能区块：子域名、文件存储、OpenAPI、权限管理 */}
-        {/* ... 复制原始 LandingImages 里的剩余 grid div ... */}
-
-        {/* 最下面的 demo */}
-        <div className="grids grids-dark mx-auto my-12 flex w-full max-w-6xl px-4">
+        {/* 如果不需要 demo 区，可注释掉下面 */}
+        {/* <div className="grids grids-dark mx-auto my-12 flex w-full max-w-6xl px-4">
           <UrlShortener />
           <EmailManagerExp />
-        </div>
+        </div> */}
       </div>
-    </>
+    </section>
   );
 }
