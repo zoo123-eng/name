@@ -11,28 +11,31 @@ export default {
       id: "wordpress",
       name: "OEON 论坛登录",
       type: "oauth",
-      authorization: "https://oeon.cc/oauth/authorize?scope=basic",
+      // 子比主题标准的授权端点
+      authorization: "https://oeon.cc/oauth/authorize",
       token: "https://oeon.cc/oauth/token",
-      userinfo: "https://oeon.cc/oauth/me", 
+      // 重点：子比主题通常使用这个路径获取用户信息
+      userinfo: "https://oeon.cc/oauth/get_userinfo", 
       clientId: env.WP_CLIENT_ID, 
       clientSecret: env.WP_CLIENT_SECRET,
       checks: ["none"], 
       profile: (profile: any) => {
-        // 兼容不同的返回结构
-        const user = profile.user || profile;
-        const id = (user.ID || user.id || "").toString();
-        const email = user.user_email || user.email;
+        // 子比主题返回的数据通常包裹在 data 节点或根节点下
+        console.log("Zibll Profile Raw:", profile);
+        
+        const user = profile.data || profile;
+        const userId = (user.id || user.ID || user.openid || "").toString();
 
         return {
-          id: id,
-          name: user.display_name || user.username || user.name || "OEON_User",
-          // PrismaAdapter 必须要求唯一 email
-          // 如果论坛没返回 email，我们根据 ID 生成一个伪邮箱，防止数据库写入失败
-          email: email || `${id}@oeon.cc`, 
-          image: user.avatar_url || null,
+          id: userId,
+          name: user.display_name || user.name || user.nickname || "OEON_User",
+          // 子比可能不返回 email，这里必须给 Prisma 一个兜底值
+          email: user.email || user.user_email || `${userId}@oeon.cc`,
+          image: user.avatar || user.avatar_url || null,
         };
       },
     },
+    // --- 以下保持不变 ---
     Google({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
