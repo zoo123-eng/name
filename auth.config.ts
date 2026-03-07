@@ -7,30 +7,30 @@ import { env } from "@/env.mjs";
 
 export default {
   providers: [
-    // --- OEON 论坛一键登录 (修复 Server Error 增强版) ---
+    // --- OEON 论坛登录 (标准环境变量版) ---
     {
       id: "wordpress",
       name: "OEON 论坛登录",
       type: "oauth",
       authorization: {
         url: "https://oeon.cc/oauth/authorize",
-        params: { scope: "basic" }, // 显式声明基础权限
+        params: { scope: "basic" },
       },
       token: "https://oeon.cc/oauth/token",
       userinfo: "https://oeon.cc/oauth/me", 
-      clientId: "Rw4MSDStMY6Ug6OIjuLpxGaGWOnbBcW6EVJ8uuBL", 
-      clientSecret: "3VWWz25lL2jaSkjl6W9Q2wRCNHSaowgk1lZbsj8R",
-      // 重要：在某些 Serverless 环境下，state 校验会导致 Server Error
-      // 这里的 checks 设置为 ["none"] 可以极大提高兼容性
+      // 改为从 env.mjs 中读取，确保部署环境一致性
+      clientId: env.WP_CLIENT_ID, 
+      clientSecret: env.WP_CLIENT_SECRET,
+      // 保持 checks: ["none"] 以解决 Serverless 环境下的 state 校验问题
       checks: ["none"], 
       profile: (profile: any) => {
-        console.log("OEON Profile Data:", profile);
+        // 自动映射 WordPress 返回的字段
+        const user = profile.user || profile;
         return {
-          // 这里的逻辑确保无论 WP 插件返回什么格式，都能抓到 ID 和名字
-          id: (profile.ID || profile.id || profile.sub || "").toString(),
-          name: profile.display_name || profile.name || profile.user_login || "OEON User",
-          email: profile.user_email || profile.email || null,
-          image: profile.avatar_url || null,
+          id: (user.ID || user.id || user.sub || "").toString(),
+          name: user.display_name || user.username || user.name || "OEON User",
+          email: user.user_email || user.email || null,
+          image: user.avatar_url || null,
         };
       },
     },
